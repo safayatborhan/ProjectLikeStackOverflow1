@@ -1,0 +1,107 @@
+﻿@*@model IEnumerable<ProjectLikeStackOverflow1.Models.Questions>*@
+@model PagedList.IPagedList<ProjectLikeStackOverflow1.Models.Questions>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<head>
+    <script src="~/scripts/jquery-3.1.0.min.js"></script>
+</head>
+<body>
+    <p>
+        @Html.ActionLink("Ask a question", "Create")
+    </p>
+
+    @using (Html.BeginForm("Index", "Questions", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
+    <table id="myTable" class="table">
+        <thead>
+            <tr>
+                <th>@Html.ActionLink("Votes", "Index", new { sortOrder = ViewBag.VoteSortParameter, currentFilter = ViewBag.CurrentFilter })</th>
+                <th>@Html.ActionLink("Answers", "Index", new { sortOrder = ViewBag.AnswerNumberSortParameter, currentFilter = ViewBag.CurrentFilter })</th>
+                <th>@Html.ActionLink("Views", "Index", new { sortOrder = ViewBag.ViewSortParameter, currentFilter = ViewBag.CurrentFilter })</th>
+                <th>@Html.ActionLink("Questions", "Index", new { sortOrder = ViewBag.DateSortParameter, currentFilter = ViewBag.CurrentFilter })</th>
+                @*<th>Votes</th>
+                <th>Answers</th>
+                <th>Views</th>
+                <th>Questions</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>                        
+                        @Html.DisplayFor(modelItem => item.Vote)<br /><text>Votes</text>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Answer1)<br /><text>Answers</text>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.View)<br /><text>Views</text>
+                    </td>
+                    <td>
+                        @*@Html.DisplayFor(modelItem => item.Title)*@
+                        @Html.HiddenFor(modelItem => item.Title)
+                        @Html.ActionLink(item.Title, "GoForAnswer", new { idForAnswer = item.ID, title = item.Title, question = item.Question, view = item.View, date = item.Date, answerNumber = item.Answer1, vote = item.Vote , correctAnswer = item.AcceptedAnswer , UserName = item.UserName , answerUserName = Session["Username"] .ToString()})<br />@Html.DisplayFor(modelItem => (item.UserName)) , @Html.DisplayFor(modelItem => (item.Date))
+                    </td>
+                    @*<td>
+                        @Html.DisplayFor(modelItem => item.Question)
+                    </td>*@
+                    @*<td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>*@
+                </tr>
+            }
+        </tbody>
+
+    </table>
+    <br />
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+    @*<link href="//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+
+    <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                "ajax": {
+                    "url": "/Questions/loaddata",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                        { "data": "Vote", "autoWidth": true },
+                        { "data": "Answer1", "autoWidth": true },
+                        { "data": "View", "autoWidth": true },
+                        {
+                            "data": "Title", "autoWidth": true,
+                            'render': function (Title)
+                            {
+                                //return '<a href=' + Title + '>' + Title + '</a>';
+                                return '<a href=/Questions/GoForAnswer/?idForAnswer='+ 2+'&title=dfg&question=dfg&view=59&date=08%2F10%2F2016%2023%3A39%3A17&answerNumber=13&vote=113>' + Title + '</a>';
+                            }
+                        }
+                ]
+            });
+        });
+    </script>*@
+
+
+</body>
